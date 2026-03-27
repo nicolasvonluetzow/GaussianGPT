@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="GaussianGPT: Towards Autoregressive 3D Gaussian Scene Generation">
+  <meta name="keywords" content="autoregressive generation, 3D Gaussian Splatting, scene generation, GPT, 3D generation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GaussianGPT: Towards Autoregressive 3D Gaussian Scene Generation</title>
+
+  <!-- Favicon: house symbol representing indoor scene -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
+  <!-- Academicons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Custom JS -->
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://nicolasvonluetzow.github.io/">
+        <span class="icon">
+          <i class="fas fa-home"></i>
+        </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://nicolasvonluetzow.github.io/LinPrim/">
+            LinPrim
+          </a>
+          <a class="navbar-item" href="https://niessnerlab.org/publications.html">
+            TUM Visual Computing
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ==================== HERO / HEADER ==================== -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">GaussianGPT: Towards Autoregressive 3D Gaussian Scene Generation</h1>
+          <h2 class="title is-5 publication-title">arXiv 2026</h2>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://nicolasvonluetzow.github.io/">Nicolas von Lützow</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://barbararoessle.github.io/">Barbara Rössle</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.niessnerlab.org/members/katharina_schmid/profile.html">Katharina Schmid</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.niessnerlab.org/index.html">Matthias Nießner</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Technical University of Munich</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+
+              <!-- Paper PDF link — TODO: restore href and remove disabled styles once paper is available -->
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark"
+                   style="opacity: 0.4; cursor: not-allowed; pointer-events: none;"
+                   title="Coming soon">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+
+              <!-- arXiv link — TODO: restore href and remove disabled styles once paper is available -->
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark"
+                   style="opacity: 0.4; cursor: not-allowed; pointer-events: none;"
+                   title="Coming soon">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+
+              <span class="link-block">
+                <a href="https://youtu.be/zVnMHkFzHDg"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+
+              <span class="link-block">
+                <a href="https://github.com/nicolasvonluetzow/gaussiangpt"
+                   class="external-link button is-normal is-rounded is-dark"
+                   disabled style="pointer-events: none; opacity: 0.5;" title="Coming soon">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (Coming Soon)</span>
+                </a>
+              </span>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== TEASER VIDEO ==================== -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video autoplay muted loop playsinline style="width: 100%; border-radius: 8px;">
+        <source src="static/videos/teaser_video.mp4" type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered" style="margin-top: 0rem;">
+        GaussianGPT generates 3D Gaussian scenes fully autoregressively, token by token using a GPT-style transformer allowing for flexible 3D generation, completion, and outpainting.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== ABSTRACT ==================== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+Most recent advances in 3D generative modeling rely on diffusion or flow-matching formulations.
+We instead explore a fully autoregressive alternative and introduce GaussianGPT, a transformer-based model that directly generates 3D Gaussians via next-token prediction, thus facilitating full 3D scene generation.
+We first compress Gaussian primitives into a discrete latent grid using a sparse 3D convolutional autoencoder with vector quantization.
+The resulting tokens are serialized and modeled using a causal transformer with 3D rotary positional embedding, enabling sequential generation of spatial structure and appearance.
+Unlike diffusion-based methods that refine scenes holistically, our formulation constructs scenes step-by-step, naturally supporting completion, outpainting, controllable sampling via temperature, and flexible generation horizons.
+This formulation leverages the compositional inductive biases and scalability of autoregressive modeling while operating on explicit representations compatible with modern neural rendering pipelines, positioning autoregressive transformers as a complementary paradigm for controllable and context-aware 3D generation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== YOUTUBE VIDEO ==================== -->
+<section class="section" style="padding-top: 0;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/zVnMHkFzHDg"
+                  title="YouTube video player" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== METHOD / PIPELINE ==================== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Method Overview</h2>
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <img src="static/images/method.jpeg" alt="GaussianGPT Pipeline" style="width: 100%; max-width: 1200px;">
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>3D Gaussian Compression.</b>
+            We first convert a 3D Gaussian scene into a compact discrete representation suitable for token-based modeling.
+            Gaussian primitives are projected onto a sparse 3D voxel grid, then compressed by a sparse 3D convolutional encoder into a low-dimensional latent grid.
+            The latent features are discretized via lookup-free quantization, yielding a grid of codebook indices that faithfully encodes both the geometry and appearance of the scene.
+            A symmetric decoder reconstructs the Gaussian attributes from these indices, trained end-to-end with rendering, occupancy, and codebook entropy losses.
+          </p>
+          <p>
+            <b>Autoregressive Generation.</b>
+            The quantized latent grid is serialized into a 1D token sequence by traversing voxels in a fixed <em>xyz</em> order, interleaving position tokens and feature tokens for each occupied voxel.
+            A GPT-style causal transformer with 3D rotary positional embeddings is trained to predict this sequence token by token, jointly modeling scene geometry and appearance.
+            At inference time, the model generates scenes unconditionally from scratch, or conditions on a partial scene to perform completion and outpainting, all using the same autoregressive sampling mechanism.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== RESULTS ==================== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Results</h2>
+      </div>
+    </div>
+
+    <!-- Generation -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4">Unconditional Generation</h3>
+        <video autoplay controls muted loop style="width: 100%; border-radius: 8px;">
+          <source src="static/videos/render_pt_samples_video.mp4" type="video/mp4">
+        </video>
+        <p class="is-size-6 has-text-grey" style="margin-top: 0.75rem;">
+          By starting only with a BOS token, GaussianGPT can autoregressively generate 3D Gaussian scenes unconditionally, producing diverse scene chunks.
+        </p>
+      </div>
+    </div>
+
+    <!-- Completion -->
+    <div class="columns is-centered has-text-centered" style="margin-top: 3rem;">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4">Completion</h3>
+        <video autoplay controls muted loop style="width: 100%; border-radius: 8px;">
+          <source src="static/videos/render_completions_video_v3.mp4" type="video/mp4">
+        </video>
+        <p class="is-size-6 has-text-grey" style="margin-top: 0.75rem;">
+          GaussianGPT naturally supports scene completion by conditioning on a partial scene as a prompt, then autoregressively generating the remaining tokens to complete the scene.
+        </p>
+      </div>
+    </div>
+
+    <!-- Large Scene Generation -->
+    <div class="columns is-centered has-text-centered" style="margin-top: 3rem;">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4">Large Scene Generation</h3>
+        <video autoplay controls muted loop style="width: 100%; border-radius: 8px;">
+          <source src="static/videos/render_pt_topdown_video.mp4" type="video/mp4">
+        </video>
+        <p class="is-size-6 has-text-grey" style="margin-top: 0.75rem;">
+          Through repeated outpainting, GaussianGPT can generate large scenes that exceed the model's training horizon while keeping a consistent style and structure.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ==================== BIBTEX ==================== -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <!-- TODO: fill in BibTeX below -->
+Coming soon!
+  </div>
+</section>
+
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <!-- TODO: replace with your paper PDF URL -->
+      <a class="icon-link" href="[TODO: PDF URL]">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/nicolasvonluetzow/gaussiangpt">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website source code borrowed from the
+            <a href="https://github.com/nerfies/nerfies.github.io">nerfies webpage</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
