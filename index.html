@@ -98,12 +98,9 @@
 
           <div class="column has-text-centered">
             <div class="publication-links">
-
-              <!-- Paper PDF link — TODO: restore href and remove disabled styles once paper is available -->
               <span class="link-block">
                 <a class="external-link button is-normal is-rounded is-dark"
-                   style="opacity: 0.4; cursor: not-allowed; pointer-events: none;"
-                   title="Coming soon">
+                   href="https://arxiv.org/pdf/2603.26661">
                   <span class="icon">
                     <i class="fas fa-file-pdf"></i>
                   </span>
@@ -111,11 +108,9 @@
                 </a>
               </span>
 
-              <!-- arXiv link — TODO: restore href and remove disabled styles once paper is available -->
               <span class="link-block">
                 <a class="external-link button is-normal is-rounded is-dark"
-                   style="opacity: 0.4; cursor: not-allowed; pointer-events: none;"
-                   title="Coming soon">
+                   href="https://arxiv.org/abs/2603.26661">
                   <span class="icon">
                     <i class="ai ai-arxiv"></i>
                   </span>
@@ -302,8 +297,22 @@ This formulation leverages the compositional inductive biases and scalability of
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <!-- TODO: fill in BibTeX below -->
-Coming soon!
+    <div style="position: relative;">
+      <pre id="bibtex-code" style="background: #f5f5f5; border-radius: 6px; padding: 1.25rem; font-size: 0.85rem; overflow-x: auto;">@misc{vonluetzow2026gaussiangpt,
+      title={GaussianGPT: Towards Autoregressive 3D Gaussian Scene Generation},
+      author={von L{\"u}tzow, Nicolas andR{\"o}{\ss}le, Barbara and Schmid, Katharina and Nie{\ss}ner, Matthias},
+      year={2026},
+      eprint={2603.26661},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2603.26661},
+}</pre>
+      <button id="bibtex-copy-btn" onclick="
+        navigator.clipboard.writeText(document.getElementById('bibtex-code').innerText);
+        this.textContent = 'Copied!';
+        setTimeout(() => this.textContent = 'Copy', 2000);
+      " style="position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.3rem 0.75rem; font-size: 0.8rem; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff;">Copy</button>
+    </div>
   </div>
 </section>
 
@@ -312,8 +321,7 @@ Coming soon!
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <!-- TODO: replace with your paper PDF URL -->
-      <a class="icon-link" href="[TODO: PDF URL]">
+      <a class="icon-link"  href="https://arxiv.org/pdf/2603.26661">
         <i class="fas fa-file-pdf"></i>
       </a>
       <a class="icon-link" href="https://github.com/nicolasvonluetzow/gaussiangpt">
