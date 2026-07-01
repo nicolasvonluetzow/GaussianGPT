@@ -23,11 +23,10 @@ import hydra
 import imageio.v3 as iio
 import lightning
 import torch
-from omegaconf import DictConfig, OmegaConf
-
 from data.vfront_dataset import VFrontPreprocessedDataModule
 from model.gaussian_gpt import GaussianGPT
 from model.gaussian_vqvae import GaussianVQVAE
+from omegaconf import DictConfig, OmegaConf
 from utils.completion_resample import (
     DEFAULT_MAX_RETRIES,
     complete_with_empty_column_retry,
@@ -722,14 +721,15 @@ def run_completion_inference(
                             )
                         )
                     else:
+                        sparse_budget = max(0, int(gpt.model_config.n_ctx) - prefix_len)
                         completed_tokens = gpt.gpt.sample_sequence_with_prompt(
                             prefix_tokens,
-                            max_new_tokens=remaining_len,
+                            max_new_tokens=sparse_budget,
                             num_samples=1,
                             temperature=float(cfg.temperature),
                             top_k=cfg.get("top_k"),
                             top_p=cfg.get("top_p"),
-                            stop_on_eos=False,
+                            stop_on_eos=True,
                             seed=completion_seed,
                         )[0]
                 else:
@@ -763,7 +763,6 @@ def run_completion_inference(
                         "seed": int(completion_seed),
                         "full_length": int(full_len),
                         "prefix_length": int(prefix_len),
-                        "remaining_length": int(remaining_len),
                         "completed_tokens": completed_tokens.detach()
                         .cpu()
                         .to(dtype=torch.long),
@@ -842,7 +841,6 @@ def run_completion_inference(
                         "seed": int(completion_seed),
                         "full_length": int(full_len),
                         "prefix_length": int(prefix_len),
-                        "remaining_length": int(remaining_len),
                         "token_path": (
                             str(token_path) if token_path is not None else None
                         ),
