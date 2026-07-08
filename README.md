@@ -33,7 +33,8 @@ context-aware 3D generation.
 
 ## News
 
-- **2026-07-01** - Pre-trained scene-level VQ-VAE and GPT checkpoints released.
+- **2026-07-02** - Camera-ready paper now available on [arXiv](https://arxiv.org/abs/2603.26661).
+- **2026-07-01** - Pre-trained scene-level VQ-VAE and GPT [checkpoints](#checkpoints) released.
 - **2026-06-19** - Training and inference code released.
 - **2026-06-18** - GaussianGPT accepted to ECCV 2026!
 
@@ -242,8 +243,7 @@ The original source data is no longer available, but more recent re-releases (e.
 
 - **PhotoShape** — standard Inria-style 3DGS `.ply` files.
 - **3D-FRONT** — PyTorch dicts; easiest to follow the data-loading code directly.
-
-Our dicts hold the default 3DGS attributes, but split position into `anchor` (3D anchor
+The dicts hold the default 3DGS attributes, but split position into `anchor` (3D anchor
 positions) and `offset`. `f_dc`/`f_rest` hold the SH coefficients; all other attributes
 are stored **pre-activation** (logits).
 
@@ -253,7 +253,7 @@ are stored **pre-activation** (logits).
 <summary>Voxel-GS preprocessing</summary>
 
 Voxel-GS is the simplified [Scaffold-GS](https://city-super.github.io/scaffold-gs/) from
-[L3DG](https://arxiv.org/pdf/2410.13530) — no MLP, one Gaussian per voxel, no hierarchy.
+[L3DG](https://barbararoessle.github.io/l3dg/) — no MLP, one Gaussian per voxel, no hierarchy.
 
 - **PhotoShape** — L3DG Voxel-GS as-is (paper Secs. 3.2.1, 3.4).
 - **3D-FRONT** — same, with: point cloud from back-projected depth maps; no scene
@@ -381,7 +381,7 @@ wget https://kaldir.vc.cit.tum.de/gaussiangpt/gpt_both.ckpt
 Pass them to any inference entry point as `checkpoint=<gpt.ckpt>
 vqvae_checkpoint=<vqvae.ckpt>` (see [Inference](#inference)).
 
-Object-level checkpoints are not yet available and will be added soon.
+Object-level checkpoints are not yet available and are expected by 2026-07-13.
 
 ## Inference
 
