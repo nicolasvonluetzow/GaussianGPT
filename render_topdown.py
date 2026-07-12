@@ -6,7 +6,7 @@ from pathlib import Path
 import imageio.v3 as iio
 import torch
 
-from utils.render import GaussianScene, render
+from utils.render import GaussianScene, render, rotate_scene_y_up_to_z_up
 
 REQUIRED_SCENE_KEYS = {"coords", "sh0", "opacities", "scales", "quats"}
 FIT_MARGIN = 1.05
@@ -42,6 +42,12 @@ def _build_args() -> argparse.Namespace:
         choices=["white", "black"],
         default="white",
         help="Background color used for rendering.",
+    )
+    parser.add_argument(
+        "--up",
+        choices=["z", "y"],
+        default="z",
+        help="Up axis of the input payload. 'y' rotates the scene to z-up before rendering.",
     )
     return parser.parse_args()
 
@@ -189,6 +195,8 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     payload = _load_scene_payload(input_path, device=device)
+    if args.up == "y":
+        payload = rotate_scene_y_up_to_z_up(GaussianScene.from_dict(payload)).to_dict()
     filtered, threshold, kept_points, total_points = _filter_by_z_quantile(
         payload,
         quantile=float(args.quantile),

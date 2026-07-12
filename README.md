@@ -33,6 +33,7 @@ context-aware 3D generation.
 
 ## News
 
+- **2026-07-12** - Object-level (PhotoShape) [checkpoints](#checkpoints) released.
 - **2026-07-02** - Camera-ready paper now available on [arXiv](https://arxiv.org/abs/2603.26661).
 - **2026-07-01** - Pre-trained scene-level VQ-VAE and GPT [checkpoints](#checkpoints) released.
 - **2026-06-19** - Training and inference code released.
@@ -241,7 +242,7 @@ The original source data is no longer available, but more recent re-releases (e.
 <details>
 <summary>Data format</summary>
 
-- **PhotoShape** — standard Inria-style 3DGS `.ply` files.
+- **PhotoShape** — standard Inria-style 3DGS `.ply` files (y-up).
 - **3D-FRONT** — PyTorch dicts; easiest to follow the data-loading code directly.
 The dicts hold the default 3DGS attributes, but split position into `anchor` (3D anchor
 positions) and `offset`. `f_dc`/`f_rest` hold the SH coefficients; all other attributes
@@ -307,6 +308,8 @@ python train_ae.py \
   `data=spp_v2`, etc.
 - Loss weights live in `conf/training/vqvae.yaml`; the defaults target
   VFront/ASE, and the file notes the PhotoShape overrides.
+- PhotoShape additionally needs `model=vqvae_photoshape` (finer voxels,
+  view-dependent color). The training overrides are listed at the top of that config.
 - `max_epochs` is a deliberate overestimate — stop the run by picking a
   checkpoint rather than waiting for it to finish.
 - Resume with `experiment.checkpoint_path=<ckpt> experiment.continue_mode=resume`
@@ -349,6 +352,8 @@ python train_gpt.py \
   `training=gpt`). Use `data=tokenized_vfront_ase` for the combined VFront+ASE
   model. `data_path` and `vqvae_path` are required (`???`) in the tokenized data
   configs and must be supplied.
+- For the object-level model use `data=tokenized_photoshape
+  model=gpt_photoshape` (GPT-2-small on a 32^3 grid).
 - Transformer size is set inline via the `gpt_size` block in
   `conf/model/gpt.yaml` (`n_embd`, `n_layer`, `n_head`, `n_kv_head`). The default
   (`n_embd=1024`, `n_layer=24`) matches GPT-2-medium.
@@ -376,12 +381,14 @@ wget https://kaldir.vc.cit.tum.de/gaussiangpt/gpt_vfront.ckpt
 # Pre-trained on 3D-FRONT + ASE, fine-tuned on 3D-FRONT
 wget https://kaldir.vc.cit.tum.de/gaussiangpt/vqvae_both.ckpt
 wget https://kaldir.vc.cit.tum.de/gaussiangpt/gpt_both.ckpt
+
+# Trained on PhotoShape (object-level)
+wget https://kaldir.vc.cit.tum.de/gaussiangpt/vqvae_photoshape.ckpt
+wget https://kaldir.vc.cit.tum.de/gaussiangpt/gpt_photoshape.ckpt
 ```
 
 Pass them to any inference entry point as `checkpoint=<gpt.ckpt>
 vqvae_checkpoint=<vqvae.ckpt>` (see [Inference](#inference)).
-
-Object-level checkpoints are not yet available and are expected by 2026-07-13.
 
 ## Inference
 
@@ -392,11 +399,13 @@ need a VQ-VAE checkpoint to decode sampled tokens. The VQ-VAE is resolved as
 (`data.data_path`) are only read when conditioning on real scenes (completion);
 unconditional sampling does not touch them.
 
-### Single-chunk generation / evaluation
+### Single-chunk / object generation
 
 Samples one chunk per scene, decodes through the VQ-VAE, and renders camera
-trajectories. This module also provides the inline-eval helpers imported by
-`train_gpt.py`.
+trajectories. This module also provides the inline helpers imported by
+`train_gpt.py`. For object-level models (PhotoShape) a chunk is a whole object,
+so this is the full object-generation pipeline; the completion and multi-chunk
+entry points below are scene-level.
 
 ```bash
 # Unconditional generation: only the GPT and a VQ-VAE checkpoint are needed.
@@ -484,7 +493,8 @@ manifest, so only `--output-dir` and `--vqvae-checkpoint` are required.
 ## Rendering
 
 Standalone renderers operate on decoded scene `.pt` payloads (keys `coords`,
-`sh0`, `opacities`, `scales`, `quats`):
+`sh0`, `opacities`, `scales`, `quats`, plus optional `sh` with higher-order SH
+coefficients, rendered when present):
 
 ```bash
 # Single top-down PNG.
@@ -492,12 +502,20 @@ python render_topdown.py --input <scene.pt> --quantile 75 --resolution 1024
 
 # Rotating-orbit GIFs for one scene or a directory of scenes.
 python render_orbit_batch.py --input <scene_or_dir> --output-dir <render_out>
+
+# Object samples (PhotoShape) are y-up; keep the full object and orbit from outside.
+python render_topdown.py --input <sample.pt> --up y --quantile 100
+python render_orbit_batch.py --input <samples_dir> --output-dir <render_out> --up y --move-back 1.75
 ```
 
-`render_topdown.py` drops points above `--quantile` (to see through ceilings).
+Payloads keep their dataset's native up axis: 3D-FRONT/ASE are z-up (the
+default), PhotoShape is y-up (pass `--up y` to rotate before rendering).
+`render_topdown.py` drops points above `--quantile` (to see through ceilings;
+use `--quantile 100` to keep whole objects).
 `render_orbit_batch.py` accepts a single `.pt` or
 a directory (`--max-files` caps how many it processes) and writes per-frame
-images plus a GIF under `--output-dir`.
+images plus a GIF under `--output-dir`. Its default `--move-back` orbits from
+inside a room; use ~1.5-3 to orbit around an object.
 
 To inspect a payload in an external viewer, `scripts/convert_pt_to_ply.py`
 converts a Gaussian `.pt`/`.pth` payload to an INRIA-style `.ply`.

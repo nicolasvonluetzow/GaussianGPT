@@ -534,6 +534,45 @@ def flip_gaussian_scene(scene: GaussianScene, axis: str | int) -> GaussianScene:
     )
 
 
+def rotate_scene_y_up_to_z_up(scene: GaussianScene) -> GaussianScene:
+    # Rx(+90 deg): (x, y, z) -> (x, -z, y). Converts Inria-style y-up payloads
+    # (e.g. PhotoShape) to the z-up convention the renderers assume.
+    means = scene.means.clone()
+    y = means[:, 1].clone()
+    means[:, 1] = -means[:, 2]
+    means[:, 2] = y
+
+    quats = scene.quats.clone()
+    w = quats[:, 0].clone()
+    qx = quats[:, 1].clone()
+    qy = quats[:, 2].clone()
+    qz = quats[:, 3].clone()
+    c = math.sqrt(0.5)
+    quats[:, 0] = c * (w - qx)
+    quats[:, 1] = c * (qx + w)
+    quats[:, 2] = c * (qy - qz)
+    quats[:, 3] = c * (qz + qy)
+
+    sh = scene.sh
+    if sh is not None:
+        if sh.shape[1] != 9:
+            raise NotImplementedError(
+                f"SH rotation only implemented for degree 1 (9 coeffs), got {sh.shape[1]}."
+            )
+        # Degree-1 coeffs (m=-1,0,1 blocks of RGB) rotate with the direction:
+        # (c_1m1, c_10, c_11) -> (c_10, -c_1m1, c_11) under Rx(+90).
+        sh = torch.cat([sh[:, 3:6], -sh[:, 0:3], sh[:, 6:9]], dim=1)
+
+    return GaussianScene(
+        means=means,
+        sh0=scene.sh0,
+        sh=sh,
+        opacities=scene.opacities,
+        scales=scene.scales,
+        quats=quats,
+    )
+
+
 def rotate_gaussian_scene(scene: GaussianScene, degrees: int) -> GaussianScene:
     degrees = int(degrees) % 360
     if degrees not in (90, 180, 270):

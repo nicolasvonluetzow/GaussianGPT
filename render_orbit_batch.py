@@ -7,7 +7,7 @@ import imageio.v3 as iio
 import numpy as np
 import torch
 
-from utils.render import GaussianScene
+from utils.render import GaussianScene, rotate_scene_y_up_to_z_up
 from utils.render import render as render_fn
 
 REQUIRED_SCENE_KEYS = {"coords", "sh0", "opacities", "scales", "quats"}
@@ -59,6 +59,21 @@ def _build_args() -> argparse.Namespace:
         choices=["auto", "cpu", "cuda"],
         default="auto",
         help="Device to use for rendering.",
+    )
+    parser.add_argument(
+        "--up",
+        choices=["z", "y"],
+        default="z",
+        help="Up axis of the input payload. 'y' rotates the scene to z-up before rendering.",
+    )
+    parser.add_argument(
+        "--move-back",
+        type=float,
+        default=MOVE_BACK,
+        help=(
+            "Camera pull-back distance as a multiple of the smallest AABB extent. "
+            "Default orbits inside rooms; use ~2-3 to orbit outside an object."
+        ),
     )
     return parser.parse_args()
 
@@ -145,7 +160,7 @@ def _rotation_z(angle_deg: float, *, device: torch.device) -> torch.Tensor:
     return rot
 
 
-def _build_fixed_views(scene: GaussianScene) -> torch.Tensor:
+def _build_fixed_views(scene: GaussianScene, move_back: float) -> torch.Tensor:
     coords = scene.means
     if coords.numel() == 0:
         raise ValueError("Input scene is empty.")
@@ -161,7 +176,7 @@ def _build_fixed_views(scene: GaussianScene) -> torch.Tensor:
 
     rot_x = _rotation_x(-90.0 + A_X_DEG, device=device)
     translate_back = torch.eye(4, device=device, dtype=torch.float32)
-    translate_back[2, 3] = -MOVE_BACK * extent
+    translate_back[2, 3] = -move_back * extent
 
     view_mats = []
     rot_z_step = 360.0 / float(NUM_FRAMES)
@@ -198,9 +213,13 @@ def _render_scene_suite(
     resolution: int,
     background_color: str,
     device: torch.device,
+    up: str,
+    move_back: float,
 ) -> None:
     scene = _load_scene(scene_path, device=device)
-    view_mats = _build_fixed_views(scene)
+    if up == "y":
+        scene = rotate_scene_y_up_to_z_up(scene)
+    view_mats = _build_fixed_views(scene, move_back)
     images = _render_views(
         scene,
         view_mats,
@@ -265,6 +284,8 @@ def main() -> None:
             resolution=int(args.resolution),
             background_color=args.background_color,
             device=device,
+            up=args.up,
+            move_back=float(args.move_back),
         )
         processed += 1
 
