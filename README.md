@@ -4,7 +4,7 @@
 
 **Nicolas von Lützow · Barbara Rössle · Katharina Schmid · Matthias Nießner**
 
-### ECCV 2026
+### ECCV 2026 (Long Oral)
 
 [Project Page](https://nicolasvonluetzow.github.io/GaussianGPT/) · [arXiv](https://arxiv.org/abs/2603.26661) · [Paper](https://arxiv.org/pdf/2603.26661) · [Video](https://youtu.be/zVnMHkFzHDg)
 
@@ -33,6 +33,7 @@ context-aware 3D generation.
 
 ## News
 
+- **2026-08-05** - GaussianGPT selected for a long oral presentation!
 - **2026-07-12** - Object-level (PhotoShape) [checkpoints](#checkpoints) released.
 - **2026-07-02** - Camera-ready paper now available on [arXiv](https://arxiv.org/abs/2603.26661).
 - **2026-07-01** - Pre-trained scene-level VQ-VAE and GPT [checkpoints](#checkpoints) released.
