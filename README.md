@@ -4,7 +4,7 @@
 
 **Nicolas von Lützow · Barbara Rössle · Katharina Schmid · Matthias Nießner**
 
-### ECCV 2026 (Long Oral)
+### ECCV 2026 (Oral)
 
 [Project Page](https://nicolasvonluetzow.github.io/GaussianGPT/) · [arXiv](https://arxiv.org/abs/2603.26661) · [Paper](https://arxiv.org/pdf/2603.26661) · [Video](https://youtu.be/zVnMHkFzHDg)
 
@@ -33,7 +33,7 @@ context-aware 3D generation.
 
 ## News
 
-- **2026-08-05** - GaussianGPT selected for a long oral presentation!
+- **2026-08-05** - GaussianGPT selected for an oral presentation!
 - **2026-07-12** - Object-level (PhotoShape) [checkpoints](#checkpoints) released.
 - **2026-07-02** - Camera-ready paper now available on [arXiv](https://arxiv.org/abs/2603.26661).
 - **2026-07-01** - Pre-trained scene-level VQ-VAE and GPT [checkpoints](#checkpoints) released.
@@ -67,14 +67,11 @@ the CLI as `key=value`.
 If you find GaussianGPT useful, please consider citing:
 
 ```bibtex
-@misc{vonluetzow2026gaussiangpt,
-  title         = {GaussianGPT: Towards Autoregressive 3D Gaussian Scene Generation},
-  author        = {von L{\"u}tzow, Nicolas and R{\"o}{\ss}le, Barbara and Schmid, Katharina and Nie{\ss}ner, Matthias},
-  year          = {2026},
-  eprint        = {2603.26661},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.CV},
-  url           = {https://arxiv.org/abs/2603.26661},
+@inproceedings{vonluetzow2026gaussiangpt,
+  title     = {GaussianGPT: Towards Autoregressive 3D Gaussian Scene Generation},
+  author    = {von L{\"u}tzow, Nicolas and R{\"o}{\ss}le, Barbara and Schmid, Katharina and Nie{\ss}ner, Matthias},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2026},
 }
 ```
 
